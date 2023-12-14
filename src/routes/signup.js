@@ -4,6 +4,7 @@ import validateRequest from "../middlewares/validate-request.js";
 import { User } from "../sequelize/sequelize.js";
 import BadRequestError from "../errors/bad-request.js";
 import nodemailer from "nodemailer";
+import Password from "../helpers/password.js";
 
 const router = express.Router();
 
@@ -36,7 +37,7 @@ router.post(
             firstName,
             lastName,
             email,
-            password: signupCode
+            password: signupCode,
         });
 
         const transporter = nodemailer.createTransport({
@@ -63,8 +64,8 @@ router.post(
     }
 );
 
-router.put(
-    "/api/users/signup",
+router.post(
+    "/api/users/signup/enable",
     [
         body("email").isEmail().withMessage("Email must be valid"),
         body("signupCode")
@@ -79,13 +80,33 @@ router.put(
     ],
     validateRequest,
     async function (req, res) {
-        const { email, password } = req.body;
+        const { email, signupCode, password } = req.body;
+        console.log(
+            "Creating user",
+            email,
+            "with password",
+            password,
+            "and signup code",
+            signupCode
+        );
 
         const existingUser = await User.findOne({ where: { email } });
-        console.log(existingUser.password);
-        // Recuperar contraseña y compararla con signupCode, si coincide, actualizarla con la nueva contraseña y activar usuario
+        if (!existingUser)
+            throw new BadRequestError(
+                `User with email ${email} does not exist`
+            );
 
-        res.status(200).send({});
+        const isValidCode = await Password.compare(
+            existingUser.password,
+            signupCode
+        );
+        if (!isValidCode) throw new BadRequestError(`Incorrect code`);
+
+        // Recuperar contraseña y compararla con signupCode, si coincide, actualizarla con la nueva contraseña y activar usuario
+        existingUser.password = password;
+        existingUser.save();
+
+        res.status(200).send({ message: "User enabled" });
     }
 );
 

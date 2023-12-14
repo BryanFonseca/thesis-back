@@ -1,15 +1,10 @@
 import { Sequelize } from "sequelize";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import { DataTypes } from "sequelize";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import Password from "../helpers/password.js";
 
 const sequelize = new Sequelize("thesis", "user", "pass", {
     host: "mysql",
     dialect: "mysql",
-    models: [__dirname + "/models"],
 });
 
 const User = sequelize.define(
@@ -35,9 +30,13 @@ const User = sequelize.define(
     },
     {
         // Other model options go here
+        hooks: {
+            beforeSave: async (user, options) => {
+                user.password = await Password.toHash(user.password);
+            },
+        },
     }
 );
-
 
 sequelize.sync({ force: true });
 
@@ -45,4 +44,4 @@ sequelize.sync({ force: true });
 // sequelize.addModels([User]);
 
 export default sequelize;
-export {User};
+export { User };
