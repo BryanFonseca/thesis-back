@@ -5,9 +5,11 @@ import { User } from "../sequelize/sequelize.js";
 import BadRequestError from "../errors/bad-request.js";
 import nodemailer from "nodemailer";
 import Password from "../helpers/password.js";
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
+// Esto asume que el usuario tiene correo institucional
 router.post(
     "/api/users/signup",
     [
@@ -40,6 +42,9 @@ router.post(
             password: signupCode,
         });
 
+        console.log('Signup code is', signupCode);
+
+        /*
         const transporter = nodemailer.createTransport({
             host: "sandbox.smtp.mailtrap.io",
             port: 2525,
@@ -55,10 +60,29 @@ router.post(
             from: '"UNEMI Segura" <thesis@unemisegura.com>', // sender address
             to: email, // list of receivers
             subject: "Creación de cuenta ✔", // Subject line
-            html: `<div>Cuenta creada. Tu código de acceso es: <strong>${signupCode}</strong></div>`, // html body
-        });
+            html: `<div style="font-family: sans-serif;">
+                    <div style="height: 100px; background-color: #00B8A9"></div>    
 
-        // console.log("Message sent: %s", info.messageId);
+                    <div style="max-width: 600px; margin: 0 auto;">
+
+                            <h1 style="font-size: 24px; margin-bottom: 20px;">Bienvenido a UNEMI Segura</h1>
+
+                            <p style="font-size: 18px; line-height: 1.6;">
+                                Estimado/a <span style="font-weight: bold;">${createdUser.firstName} ${createdUser.lastName}</span>,
+                                <br><br>
+                                Nos complace darte la bienvenida a UNEMI Segura, la aplicación que vela por tu seguridad.
+                                <br><br>
+                                Tu código de confirmación es: <span style="font-weight: bold;">${signupCode}</span>. Te recomendamos mantener este código de manera confidencial.
+                                <br><br>
+                                Gracias por confiar en UNEMI Segura. ¡Esperamos que tu experiencia sea excelente!
+                            </p>
+
+                        </div>
+                    <div style="height: 100px; background-color: #00B8A9"></div>   
+
+                    </div>`,
+        });
+        */
 
         res.status(201).send(createdUser);
     }
@@ -104,9 +128,18 @@ router.post(
 
         // Recuperar contraseña y compararla con signupCode, si coincide, actualizarla con la nueva contraseña y activar usuario
         existingUser.password = password;
-        existingUser.save();
+        existingUser.isEnabled = true;
+        await existingUser.save();
 
-        res.status(200).send({ message: "User enabled" });
+        console.log(process.env.JWT_KEY);
+        const userJwt = jwt.sign({
+            id: existingUser.id,
+            email: existingUser.email
+        }, process.env.JWT_KEY);
+
+        req.session.jwt = userJwt;
+
+        res.status(200).send({ message: "User enabled", user: existingUser });
     }
 );
 

@@ -7,6 +7,7 @@ const sequelize = new Sequelize("thesis", "user", "pass", {
     dialect: "mysql",
 });
 
+// TODO: agregar campo 'tipo'
 const User = sequelize.define(
     "User",
     {
@@ -27,12 +28,18 @@ const User = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        isEnabled: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        },
     },
     {
         // Other model options go here
         hooks: {
             beforeSave: async (user, options) => {
-                user.password = await Password.toHash(user.password);
+                if (user.changed('password')) {
+                    user.password = await Password.toHash(user.password);
+                }
             },
         },
     }
