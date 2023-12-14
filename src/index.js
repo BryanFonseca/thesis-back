@@ -1,7 +1,10 @@
 import express from "express";
+import 'express-async-errors';
 import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
+
+import sequelize from "./sequelize/sequelize.js";
 
 import signupRouter from './routes/signup.js';
 import errorHandler from "./middlewares/error-handler.js";
@@ -55,6 +58,21 @@ app.get('/sga-proxy', async (req, res) => {
     res.send(data);
 });
 
-server.listen(3000, () => {
-    console.log("Listening on port 3000");
-});
+
+const init = async () => {
+    try {
+        // await sequelize.sync({ force: true });
+        // Tests the connection 
+        // (await sequelize).authenticate();
+
+        console.log('Successfully connected to MySQL Database');
+
+        server.listen(3000, () => {
+            console.log("Listening on port 3000");
+        });
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+init();
