@@ -7,7 +7,7 @@ const sequelize = new Sequelize("thesis", "user", "pass", {
     dialect: "mysql",
 });
 
-// TODO: agregar campo 'tipo'
+// TODO: ocultar campo contraseña al recuperar
 const User = sequelize.define(
     "User",
     {
@@ -32,6 +32,10 @@ const User = sequelize.define(
             type: DataTypes.BOOLEAN,
             defaultValue: false,
         },
+        type: {
+            type: DataTypes.STRING,
+            allowNull: false
+        }
     },
     {
         // Other model options go here

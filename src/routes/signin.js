@@ -21,14 +21,14 @@ router.post(
     async (req, res) => {
         const { email, password } = req.body;
 
-        const existingUser = await User.findOne({ where: { email } });
-        if (!existingUser) throw new BadRequestError("Invalid credentials");
+        const existingUser = await User.findOne({ where: { email, isEnabled: true } });
+        if (!existingUser) throw new BadRequestError("Credenciales inválidas");
 
         const passwordsMatch = await Password.compare(
             existingUser.password,
             password
         );
-        if (!passwordsMatch) throw new BadRequestError("Invalid credentials");
+        if (!passwordsMatch) throw new BadRequestError("Credenciales inválidas");
 
         console.log(existingUser.id);
         console.log(existingUser.email);
