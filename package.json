@@ -24,7 +24,8 @@
     "nodemon": "^3.0.1",
     "reflect-metadata": "^0.1.14",
     "sequelize": "^6.35.2",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "web-push": "^3.6.6"
   },
   "devDependencies": {
     "sequelize-cli": "^6.6.2"

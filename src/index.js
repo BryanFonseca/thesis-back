@@ -5,12 +5,13 @@ import http from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 
-import _ from "./sequelize/sequelize.js";
+import "./sequelize/sequelize.js";
+import "./seed.db.js";
 
 import signupRouter from "./routes/signup.js";
 import signinRouter from "./routes/signin.js";
 import signoutRouter from "./routes/signout.js";
-import usersRouter from './routes/users.js';
+import usersRouter from "./routes/users.js";
 
 import errorHandler from "./middlewares/error-handler.js";
 import cookieSession from "cookie-session";

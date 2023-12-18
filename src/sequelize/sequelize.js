@@ -34,14 +34,14 @@ const User = sequelize.define(
         },
         type: {
             type: DataTypes.STRING,
-            allowNull: false
-        }
+            allowNull: false,
+        },
     },
     {
         // Other model options go here
         hooks: {
             beforeSave: async (user, options) => {
-                if (user.changed('password')) {
+                if (user.changed("password")) {
                     user.password = await Password.toHash(user.password);
                 }
             },
@@ -49,10 +49,20 @@ const User = sequelize.define(
     }
 );
 
-sequelize.sync({ force: true });
+const PushNotificationSubscriptions = sequelize.define(
+    "PushNotificationSubscriptions",
+    {
+        subscription: {
+            type: DataTypes.JSON,
+            allowNull: false,
+        }
+    }
+);
+
+await sequelize.sync({ force: true });
 
 // console.log(sequelize.models);
 // sequelize.addModels([User]);
 
 export default sequelize;
-export { User };
+export { User, PushNotificationSubscriptions };
