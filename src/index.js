@@ -12,6 +12,7 @@ import signupRouter from "./routes/signup.js";
 import signinRouter from "./routes/signin.js";
 import signoutRouter from "./routes/signout.js";
 import usersRouter from "./routes/users.js";
+import pushNotificationsRouter from './routes/push-notifications.js';
 
 import errorHandler from "./middlewares/error-handler.js";
 import cookieSession from "cookie-session";
@@ -36,6 +37,7 @@ app.use(signupRouter);
 app.use(signinRouter);
 app.use(signoutRouter);
 app.use(usersRouter);
+app.use(pushNotificationsRouter);
 
 app.get("/api/test", currentUser, requireAuth, (req, res) => {
     res.status(200).send({ test: true });

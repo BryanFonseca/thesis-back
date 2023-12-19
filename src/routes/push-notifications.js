@@ -1,5 +1,6 @@
 import express from "express";
-import { PushNotificationSubscriptions } from "../sequelize/sequelize";
+import { PushNotificationSubscriptions } from "../sequelize/sequelize.js";
+import {setVapidDetails} from 'web-push';
 
 const router = express.Router();
 
@@ -8,6 +9,11 @@ router.post("/api/notifications/save-subscription", async (req, res) => {
         subscription: req.body,
     });
     res.status(201).send({ data: { success: true } });
+});
+
+// Send notification test
+router.post("/api/notifications/send", async (req, res) => {
+    // webpus
 });
 
 export default router;
