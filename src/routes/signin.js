@@ -30,8 +30,8 @@ router.post(
         );
         if (!passwordsMatch) throw new BadRequestError("Credenciales inválidas");
 
-        console.log(existingUser.id);
-        console.log(existingUser.email);
+        // console.log(existingUser.id);
+        // console.log(existingUser.email);
         const userJwt = jwt.sign(
             {
                 id: existingUser.id,

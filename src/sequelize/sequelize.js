@@ -36,6 +36,10 @@ const User = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        pushSubscription: {
+            type: DataTypes.JSON,
+            allowNull: true
+        }
     },
     {
         // Other model options go here
@@ -49,6 +53,7 @@ const User = sequelize.define(
     }
 );
 
+/*
 const PushNotificationSubscriptions = sequelize.define(
     "PushNotificationSubscriptions",
     {
@@ -58,6 +63,7 @@ const PushNotificationSubscriptions = sequelize.define(
         }
     }
 );
+*/
 
 await sequelize.sync({ force: true });
 
@@ -65,4 +71,4 @@ await sequelize.sync({ force: true });
 // sequelize.addModels([User]);
 
 export default sequelize;
-export { User, PushNotificationSubscriptions };
+export { User };

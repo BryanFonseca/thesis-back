@@ -218,7 +218,6 @@ router.post(
         existingUser.isEnabled = true;
         await existingUser.save();
 
-        console.log(process.env.JWT_KEY);
         const userJwt = jwt.sign({
             id: existingUser.id,
             email: existingUser.email
