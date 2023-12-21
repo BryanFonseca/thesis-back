@@ -32,13 +32,9 @@ const User = sequelize.define(
             type: DataTypes.BOOLEAN,
             defaultValue: false,
         },
-        type: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        pushSubscription: {
-            type: DataTypes.JSON,
-            allowNull: true
+        isAdmin: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
     },
     {
@@ -46,6 +42,7 @@ const User = sequelize.define(
         hooks: {
             beforeSave: async (user, options) => {
                 if (user.changed("password")) {
+                    // console.log('Changed for', user.password);
                     user.password = await Password.toHash(user.password);
                 }
             },
@@ -53,6 +50,33 @@ const User = sequelize.define(
     }
 );
 
+const Student = sequelize.define(
+    "Student",
+    {
+        semester: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        // More student fields
+    },
+);
+
+const Guard = sequelize.define(
+    "Guard",
+    {
+        pushSubscription: {
+            type: DataTypes.JSON,
+            allowNull: true,
+        },
+        // More guard fields. Empresa, blah blah
+    },
+);
+
+User.hasOne(Student);
+Student.belongsTo(User);
+
+User.hasOne(Guard);
+Guard.belongsTo(User);
 
 /*
 const Incidence = sequelize.define(
@@ -94,4 +118,4 @@ await sequelize.sync({ force: true });
 // sequelize.addModels([User]);
 
 export default sequelize;
-export { User };
+export { User, Student, Guard };

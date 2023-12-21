@@ -44,7 +44,15 @@ router.post(
             jwt: userJwt,
         };
 
-        res.status(200).send(existingUser);
+        // 
+        const isGuard = !!(await existingUser.getGuard()) && 'GUARDIA';
+        const isStudent = !!(await existingUser.getStudent()) && 'ESTUDIANTE';
+
+        // Change this to hide fields
+        res.status(200).send({
+            ...existingUser,
+            type: isGuard || isStudent || 'ADMIN'
+        });
     }
 );
 

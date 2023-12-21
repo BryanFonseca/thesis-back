@@ -1,7 +1,7 @@
 import express from "express";
 // import { PushNotificationSubscriptions } from "../sequelize/sequelize.js";
 import WebPush from "web-push";
-import { User } from "../sequelize/sequelize.js";
+import { Guard, User } from "../sequelize/sequelize.js";
 
 const router = express.Router();
 
@@ -18,17 +18,23 @@ router.post("/api/notifications/save-subscription", async (req, res) => {
     // Buscar usuario por email
     const existingUser = await User.findOne({where: {email}})
     // Guardar suscripción en el usuario
-    existingUser.pushSubscription = subscription;
-    await existingUser.save();
+    // existingUser.pushSubscription = subscription;
+    const guard = await existingUser.getGuard();
+    if (guard) {
+        console.log('Saving guard subscription');
+        guard.pushSubscription = subscription;
+        await guard.save();
+    }
 
     res.status(201).send({ data: { success: true } });
 });
 
 // Send notification test
 router.post("/api/notifications/send", async (req, res) => {
-    const users = await User.findAll();
+    const guards = await Guard.findAll();
+    console.log(guards);
     // const subscriptions = await PushNotificationSubscriptions.findAll();
-    for (const { pushSubscription } of users) {
+    for (const { pushSubscription } of guards) {
         if (!pushSubscription) continue;
         const notificationResult = await WebPush.sendNotification(
             pushSubscription,

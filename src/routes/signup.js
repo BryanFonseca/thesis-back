@@ -1,7 +1,7 @@
 import express from "express";
 import { body } from "express-validator";
 import validateRequest from "../middlewares/validate-request.js";
-import { User } from "../sequelize/sequelize.js";
+import { Guard, Student, User } from "../sequelize/sequelize.js";
 import BadRequestError from "../errors/bad-request.js";
 import nodemailer from "nodemailer";
 import Password from "../helpers/password.js";
@@ -20,11 +20,11 @@ router.post(
         body("firstName")
             .trim()
             .isLength({ min: 2, max: 20 })
-            .withMessage("Name must be between 2 and 4 characters"),
+            .withMessage("firstName must be between 2 and 20 characters"),
         body("lastName")
             .trim()
             .isLength({ min: 2, max: 20 })
-            .withMessage("Lastname must be between 2 and 4 characters"),
+            .withMessage("lastname must be between 2 and 4 characters"),
         body("email").isEmail().withMessage("Email must be valid"),
     ],
     validateRequest,
@@ -45,8 +45,12 @@ router.post(
             email,
             password: signupCode,
             isEnabled: true,
-            type: USER_TYPES.GUARDIA
         });
+
+        const guard = await Guard.create({
+            pushSubscription: null
+        });
+        await createdUser.setGuard(guard);
 
         console.log('Signup code is', signupCode);
 
@@ -126,8 +130,15 @@ router.post(
             lastName,
             email,
             password: signupCode,
-            type: USER_TYPES.ESTUDIANTE
+            // type: USER_TYPES.ESTUDIANTE
         });
+
+        // TODO: Create Student and relate
+        const student = await Student.create({
+            semester: 1
+        });
+
+        await createdUser.setStudent(student);
 
         console.log('Signup code is', signupCode);
 
@@ -226,7 +237,10 @@ router.post(
         req.session.jwt = userJwt;
 
         // res.status(200).send({ message: "Usuario activado", user: existingUser });
-        res.status(200).send(existingUser);
+        res.status(200).send({
+            ...existingUser,
+            type: 'ESTUDIANTE'
+        });
     }
 );
 
