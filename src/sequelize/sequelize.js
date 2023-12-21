@@ -53,17 +53,40 @@ const User = sequelize.define(
     }
 );
 
+
 /*
-const PushNotificationSubscriptions = sequelize.define(
-    "PushNotificationSubscriptions",
+const Incidence = sequelize.define(
+    "Incidence",
     {
-        subscription: {
-            type: DataTypes.JSON,
-            allowNull: false,
+        StudentId: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: User,
+                key: 'id'
+            }
+        },
+        GuardId: {
+            type: DataTypes.INTEGER,
+            references: {
+                model: User,
+                key: 'id'
+            }
+        },
+        lat: {
+            type: DataTypes.NUMBER,
+        },
+        lng: {
+            type: DataTypes.NUMBER,
         }
-    }
+    },
 );
+
+// Associations
+User.belongsToMany(User, {as: 'Users', through: Incidence});
 */
+
+// TODO: Crear entidad incidencia con campos Estudiante, Guardia y ubicación
+// TODO: 
 
 await sequelize.sync({ force: true });
 

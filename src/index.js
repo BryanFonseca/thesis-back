@@ -13,6 +13,7 @@ import signinRouter from "./routes/signin.js";
 import signoutRouter from "./routes/signout.js";
 import usersRouter from "./routes/users.js";
 import pushNotificationsRouter from './routes/push-notifications.js';
+import incidenceRouter from './routes/incidence.js';
 
 import errorHandler from "./middlewares/error-handler.js";
 import cookieSession from "cookie-session";
@@ -38,6 +39,7 @@ app.use(signinRouter);
 app.use(signoutRouter);
 app.use(usersRouter);
 app.use(pushNotificationsRouter);
+app.use(incidenceRouter);
 
 app.get("/api/test", currentUser, requireAuth, (req, res) => {
     res.status(200).send({ test: true });
