@@ -34,8 +34,8 @@ const User = sequelize.define(
         },
         isAdmin: {
             type: DataTypes.BOOLEAN,
-            defaultValue: false
-        }
+            defaultValue: false,
+        },
     },
     {
         // Other model options go here
@@ -50,27 +50,21 @@ const User = sequelize.define(
     }
 );
 
-const Student = sequelize.define(
-    "Student",
-    {
-        semester: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        // More student fields
+const Student = sequelize.define("Student", {
+    semester: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
     },
-);
+    // More student fields
+});
 
-const Guard = sequelize.define(
-    "Guard",
-    {
-        pushSubscription: {
-            type: DataTypes.JSON,
-            allowNull: true,
-        },
-        // More guard fields. Empresa, blah blah
+const Guard = sequelize.define("Guard", {
+    pushSubscription: {
+        type: DataTypes.JSON,
+        allowNull: true,
     },
-);
+    // More guard fields. Empresa, blah blah
+});
 
 User.hasOne(Student);
 Student.belongsTo(User);
@@ -78,44 +72,37 @@ Student.belongsTo(User);
 User.hasOne(Guard);
 Guard.belongsTo(User);
 
-/*
-const Incidence = sequelize.define(
-    "Incidence",
-    {
-        StudentId: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: User,
-                key: 'id'
-            }
+const Incidence = sequelize.define("Incidence", {
+    StudentId: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: Student,
+            key: "id",
         },
-        GuardId: {
-            type: DataTypes.INTEGER,
-            references: {
-                model: User,
-                key: 'id'
-            }
-        },
-        lat: {
-            type: DataTypes.NUMBER,
-        },
-        lng: {
-            type: DataTypes.NUMBER,
-        }
     },
-);
+    GuardId: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: Guard,
+            key: "id",
+        },
+    },
+    latitude: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "0",
+    },
+    longitude: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "0",
+    },
+});
 
-// Associations
-User.belongsToMany(User, {as: 'Users', through: Incidence});
-*/
-
-// TODO: Crear entidad incidencia con campos Estudiante, Guardia y ubicación
-// TODO: 
+Student.belongsToMany(Guard, { through: Incidence });
+Guard.belongsToMany(Student, {through: Incidence});
 
 await sequelize.sync({ force: true });
-
-// console.log(sequelize.models);
-// sequelize.addModels([User]);
 
 export default sequelize;
 export { User, Student, Guard };
