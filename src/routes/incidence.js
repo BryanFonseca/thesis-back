@@ -69,6 +69,7 @@ router.post(
             StudentId: student.id,
             GuardId: guard.id
         });
+        console.log(incidence);
 
         res.status(200).send({});
     }
@@ -78,7 +79,7 @@ router.get(
     "/api/incidence",
     async (_, res) => {
         const incidences = await Incidence.findAll({
-            include: Student
+            include: [Student, Guard]
         });
         res.status(200).send(incidences);
     }

@@ -1,8 +1,7 @@
 import Password from "./helpers/password.js";
-import { Guard, User } from "./sequelize/sequelize.js";
+import { Guard, Student, User } from "./sequelize/sequelize.js";
 
 async function init() {
-    const guardHashedPass = await Password.toHash('guardia');
     const guardUser = await User.create(
         {
             firstName: 'Guardia',
@@ -16,6 +15,21 @@ async function init() {
         pushSubscription: null
     });
     await guard.setUser(guardUser);
+
+    // Student seed
+    const studentUser = await User.create(
+        {
+            firstName: 'Estudiante',
+            lastName: 'Estudion',
+            email: 'estudiante@estudiante.com',
+            password: 'estudiante',
+            isEnabled: true,
+        }
+    );
+    const student = await Student.create({
+        semester: 0
+    });
+    await student.setUser(studentUser);
 
     /*
     console.log('GUARD IS', guard);

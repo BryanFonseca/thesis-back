@@ -81,20 +81,20 @@ const Incidence = sequelize.define("Incidence", {
         autoIncrement: true,
         allowNull: false,
     },
-    StudentId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Student,
-            key: "id",
-        },
-    },
-    GuardId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Guard,
-            key: "id",
-        },
-    },
+    // StudentId: {
+    //     type: DataTypes.INTEGER,
+    //     references: {
+    //         model: Student,
+    //         key: "id",
+    //     },
+    // },
+    // GuardId: {
+    //     type: DataTypes.INTEGER,
+    //     references: {
+    //         model: Guard,
+    //         key: "id",
+    //     },
+    // },
     latitude: {
         type: DataTypes.DOUBLE,
         allowNull: false,
@@ -107,8 +107,13 @@ const Incidence = sequelize.define("Incidence", {
     },
 });
 
+// Super Many-to-Many relationship
 Student.belongsToMany(Guard, { through: { model: Incidence, unique: false } });
 Guard.belongsToMany(Student, { through: { model: Incidence, unique: false } });
+Student.hasMany(Incidence);
+Incidence.belongsTo(Student);
+Guard.hasMany(Incidence);
+Incidence.belongsTo(Guard);
 
 await sequelize.sync({ force: true });
 
