@@ -13,7 +13,7 @@ async function init() {
         }
     );
     const guard = await Guard.create({
-        pushSubscription: {hi: 'there'}
+        pushSubscription: null
     });
     await guard.setUser(guardUser);
 

@@ -1,6 +1,8 @@
 import { Sequelize } from "sequelize";
 import { DataTypes } from "sequelize";
 import Password from "../helpers/password.js";
+import sequelizeErd from "sequelize-erd";
+import fs from "fs";
 
 const sequelize = new Sequelize("thesis", "user", "pass", {
     host: "mysql",
@@ -73,6 +75,12 @@ User.hasOne(Guard);
 Guard.belongsTo(User);
 
 const Incidence = sequelize.define("Incidence", {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+    },
     StudentId: {
         type: DataTypes.INTEGER,
         references: {
@@ -88,21 +96,25 @@ const Incidence = sequelize.define("Incidence", {
         },
     },
     latitude: {
-        type: DataTypes.STRING,
+        type: DataTypes.DOUBLE,
         allowNull: false,
-        defaultValue: "0",
+        defaultValue: 0,
     },
     longitude: {
-        type: DataTypes.STRING,
+        type: DataTypes.DOUBLE,
         allowNull: false,
-        defaultValue: "0",
+        defaultValue: 0,
     },
 });
 
-Student.belongsToMany(Guard, { through: Incidence });
-Guard.belongsToMany(Student, {through: Incidence});
+Student.belongsToMany(Guard, { through: { model: Incidence, unique: false } });
+Guard.belongsToMany(Student, { through: { model: Incidence, unique: false } });
 
 await sequelize.sync({ force: true });
 
+// Creates ER diagram
+const svg = await sequelizeErd({ source: sequelize });
+fs.writeFileSync("./erd.svg", svg);
+
 export default sequelize;
-export { User, Student, Guard };
+export { User, Student, Guard, Incidence };
