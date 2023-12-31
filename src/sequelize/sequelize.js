@@ -74,6 +74,8 @@ Student.belongsTo(User);
 User.hasOne(Guard);
 Guard.belongsTo(User);
 
+
+// Los estados pueden ser 'PENDIENTE' y 'RESUELTA'
 const Incidence = sequelize.define("Incidence", {
     id: {
         type: DataTypes.INTEGER,
@@ -105,6 +107,10 @@ const Incidence = sequelize.define("Incidence", {
         allowNull: false,
         defaultValue: 0,
     },
+    state: {
+        type: DataTypes.STRING,
+        defaultValue: 'PENDIENTE'
+    }
 });
 
 // Super Many-to-Many relationship
@@ -123,3 +129,6 @@ fs.writeFileSync("./erd.svg", svg);
 
 export default sequelize;
 export { User, Student, Guard, Incidence };
+
+// TODO: Refactor this splitting models across multiple files
+// TODO: Abstract away Student and Guard creation

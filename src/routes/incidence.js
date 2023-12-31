@@ -67,7 +67,7 @@ router.post(
 
         const incidence = await Incidence.create({
             StudentId: student.id,
-            GuardId: guard.id
+            GuardId: guard.id,
         });
         console.log(incidence);
 
@@ -75,14 +75,21 @@ router.post(
     }
 );
 
-router.get(
-    "/api/incidence",
-    async (_, res) => {
-        const incidences = await Incidence.findAll({
-            include: [Student, Guard]
-        });
-        res.status(200).send(incidences);
-    }
-);
+router.get("/api/incidence", async (_, res) => {
+    // TODO: antes de retornarlo, calcular distancia, o implementarlo como columna virtual
+    const incidences = await Incidence.findAll({
+        include: [
+            {
+                model: Student,
+                include: User,
+            },
+            {
+                model: Guard,
+                include: User,
+            },
+        ],
+    });
+    res.status(200).send(incidences);
+});
 
 export default router;

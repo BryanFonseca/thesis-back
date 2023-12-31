@@ -1,7 +1,8 @@
 import Password from "./helpers/password.js";
-import { Guard, Student, User } from "./sequelize/sequelize.js";
+import { Guard, Incidence, Student, User } from "./sequelize/sequelize.js";
 
 async function init() {
+    // Guard seed
     const guardUser = await User.create(
         {
             firstName: 'Guardia',
@@ -31,12 +32,22 @@ async function init() {
     });
     await student.setUser(studentUser);
 
-    /*
-    console.log('GUARD IS', guard);
-    const relatedUser = await guard.getUser();
-    console.log('User related is', relatedUser);
-    console.log('Back to guard', await relatedUser.getGuard())
-    */
+    // Incidence Seed
+    await Incidence.create({
+        StudentId: student.id,
+        GuardId: guard.id,
+        state: 'RESUELTA',
+    });
+    await Incidence.create({
+        StudentId: student.id,
+        GuardId: guard.id,
+        state: 'RESUELTA',
+    });
+    await Incidence.create({
+        StudentId: student.id,
+        GuardId: guard.id,
+        state: 'PENDIENTE',
+    });
 
     // Created admin
     const adminHashedPass = await Password.toHash('admin');
