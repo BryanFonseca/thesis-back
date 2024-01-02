@@ -12,13 +12,14 @@ import signupRouter from "./routes/signup.js";
 import signinRouter from "./routes/signin.js";
 import signoutRouter from "./routes/signout.js";
 import usersRouter from "./routes/users.js";
-import pushNotificationsRouter from './routes/push-notifications.js';
-import incidenceRouter from './routes/incidence.js';
+import pushNotificationsRouter from "./routes/push-notifications.js";
+import incidenceRouter from "./routes/incidence.js";
 
 import errorHandler from "./middlewares/error-handler.js";
 import cookieSession from "cookie-session";
 import currentUser from "./middlewares/current-user.js";
 import requireAuth from "./middlewares/require-auth.js";
+import { Guard, User } from "./sequelize/sequelize.js";
 
 const app = express();
 
@@ -26,11 +27,15 @@ app.use(express.json());
 app.use(
     cookieSession({
         signed: false, // disables encryption
-        // secure: true
+        // sameSite: 'None',
+        // secure: false
     })
 );
 
-app.use(cors({ origin: "*" }));
+app.use(cors({ 
+    origin: 'https://localhost:5173',
+    credentials: true,
+}));
 
 // Routing
 app.use(signupRouter);
@@ -59,12 +64,44 @@ const io = new Server(server, {
 // En este caso, el usuario es quien envía la data, no hace falta comunicación bilateral de socket
 io.on("connection", (socket) => {
     console.log("A user connected");
-    /*
-    socket.on('location', (data) => {
-        console.log('Recieved data:', data);
-        // when data arrives it should be sent to the admin
+    socket.on("POSITION_UPDATE", async (data) => {
+        console.log("Recieved data:", data);
+        const { userId, lat: latitude, lng: longitude } = data;
+        // TODO: Update userId guard position
+        const guard = await User.findByPk(userId);
+        console.log(guard.currentPosition);
+        guard.currentPosition = {
+            latitude,
+            longitude,
+           // Para prueba
+           /*
+           latitude: -2.15086,
+           longitude: -79.60328
+           */
+        };
+        await guard.save();
+        // TODO: Send the position of every guard
+        const guards = await User.findAll({
+            include: [
+                {
+                    model: Guard,
+                    required: true,
+                },
+            ],
+        });
+        const guardsPositions = guards.map((guardia) => ({
+            id: guardia.Guard.UserId,
+            firstName: guardia.firstName,
+            lastName: guardia.lastName,
+            email: guardia.email,
+            currentPosition: guardia.currentPosition,
+        }));
+        io.emit("POSITION_UPDATE", guardsPositions);
     });
-    */
+
+    socket.on("disconnect", () => {
+        console.log("User disconnected");
+    });
 });
 
 app.get("/", (req, res) => {

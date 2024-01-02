@@ -38,6 +38,13 @@ const User = sequelize.define(
             type: DataTypes.BOOLEAN,
             defaultValue: false,
         },
+        currentPosition: {
+            type: DataTypes.JSON,
+            defaultValue: {
+                latitude: 0,
+                longitude: 0,
+            },
+        },
     },
     {
         // Other model options go here
@@ -74,7 +81,6 @@ Student.belongsTo(User);
 User.hasOne(Guard);
 Guard.belongsTo(User);
 
-
 // Los estados pueden ser 'PENDIENTE' y 'RESUELTA'
 const Incidence = sequelize.define("Incidence", {
     id: {
@@ -109,8 +115,8 @@ const Incidence = sequelize.define("Incidence", {
     },
     state: {
         type: DataTypes.STRING,
-        defaultValue: 'PENDIENTE'
-    }
+        defaultValue: "PENDIENTE",
+    },
 });
 
 // Super Many-to-Many relationship
