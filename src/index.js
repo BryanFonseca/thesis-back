@@ -33,7 +33,7 @@ app.use(
 );
 
 app.use(cors({ 
-    origin: 'https://localhost:5173',
+    origin: 'https://bfonseca-thesis-demo.netlify.app',
     credentials: true,
 }));
 

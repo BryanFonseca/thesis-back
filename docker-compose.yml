@@ -23,7 +23,7 @@ services:
       context: .
       dockerfile: Dockerfile.nodejs
     ports:
-      - "3000:3000"
+      - "80:3000"
     networks:
       - auth-network
     depends_on:
