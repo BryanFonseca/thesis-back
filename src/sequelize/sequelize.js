@@ -106,12 +106,12 @@ const Incidence = sequelize.define("Incidence", {
     latitude: {
         type: DataTypes.DOUBLE,
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: -2.1504796752389517,
     },
     longitude: {
         type: DataTypes.DOUBLE,
         allowNull: false,
-        defaultValue: 0,
+        defaultValue: -79.6030960718069,
     },
     state: {
         type: DataTypes.STRING,

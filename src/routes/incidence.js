@@ -42,7 +42,7 @@ router.post(
 
         // TODO: find closest guard
         const maybeGuard = await User.findOne({
-            where: { email: "guardia@guardia.com" },
+            where: { email: "clopez@gmail.com" },
             // include: [
             //     {
             //         model: Guard,
@@ -52,28 +52,51 @@ router.post(
             // ],
         });
         const guard = await maybeGuard.getGuard();
-        if (!guard.pushSubscription)
-            throw new BadRequestError(
-                "Ningún guardia está suscrito a notificaciones push"
+        if (guard.pushSubscription) {
+            // throw new BadRequestError(
+            //     "Ningún guardia está suscrito a notificaciones push"
+            // );
+            const notificationResult = await WebPush.sendNotification(
+                guard.pushSubscription,
+                JSON.stringify({
+                    body: `El estudiante ${user.firstName} ${user.lastName} reportó una incidencia`,
+                })
             );
+            console.log(notificationResult);
+        }
 
-        const notificationResult = await WebPush.sendNotification(
-            guard.pushSubscription,
-            JSON.stringify({
-                body: `El estudiante ${user.firstName} ${user.lastName} reportó una incidencia`,
-            })
-        );
-        console.log(notificationResult);
 
         const incidence = await Incidence.create({
             StudentId: student.id,
             GuardId: guard.id,
+            latitude,
+            longitude
         });
         console.log(incidence);
 
         res.status(200).send({});
     }
 );
+
+router.get("/api/incidence/:id", async (req, res) => {
+    const incidenceId = req.params.id;
+    const incidences = await Incidence.findAll({
+        include: [
+            {
+                model: Student,
+                include: User,
+            },
+            {
+                model: Guard,
+                include: User,
+            },
+        ],
+        where: {
+            id: incidenceId
+        }
+    });
+    res.status(200).send(incidences.at(0));
+});
 
 router.get("/api/incidence", async (_, res) => {
     // TODO: antes de retornarlo, calcular distancia, o implementarlo como columna virtual
@@ -88,6 +111,7 @@ router.get("/api/incidence", async (_, res) => {
                 include: User,
             },
         ],
+        order: [['createdAt', 'DESC']],
     });
     res.status(200).send(incidences);
 });

@@ -5,10 +5,10 @@ async function init() {
     // Guard seed
     const guardUser = await User.create(
         {
-            firstName: 'Guardia',
-            lastName: 'Guardian',
-            email: 'guardia@guardia.com',
-            password: 'guardia',
+            firstName: 'Carlos',
+            lastName: 'López',
+            email: 'clopez@gmail.com',
+            password: 'clopez',
             isEnabled: true,
         }
     );
@@ -20,10 +20,10 @@ async function init() {
     // Student seed
     const studentUser = await User.create(
         {
-            firstName: 'Estudiante',
-            lastName: 'Estudion',
-            email: 'estudiante@estudiante.com',
-            password: 'estudiante',
+            firstName: 'Isaac',
+            lastName: 'Toala',
+            email: 'itoala@gmail.com',
+            password: 'itoala',
             isEnabled: true,
         }
     );
